@@ -6,16 +6,16 @@ artist_table_drop = "DROP TABLE IF EXISTS artists"
 time_table_drop = "DROP TABLE IF EXISTS table_name"
 
 # CREATE TABLES
-
+# artist id can be null.
 songplay_table_create = ("""
     CREATE TABLE IF NOT EXISTS songplays (
         songplay_id SERIAL PRIMARY KEY,
-        user_id int,
-        artist_id varchar,
-        session_id int,
-        song_id varchar,
+        user_id int NOT NULL,
+        artist_id varchar NOT NULL, 
+        session_id int NOT NULL,
+        song_id varchar NOT NULL,
         level varchar,
-        start_time bigint, 
+        start_time bigint NOT NULL, 
         location varchar,
         user_agent varchar
         );
@@ -34,7 +34,7 @@ user_table_create = ("""
 song_table_create = ("""
     CREATE TABLE IF NOT EXISTS songs (
         song_id varchar PRIMARY KEY, 
-        artist_id varchar,
+        artist_id varchar NOT NULL,
         title varchar, 
         year int, 
         duration int

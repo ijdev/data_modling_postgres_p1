@@ -30,6 +30,7 @@ def process_song_file(cur, filepath):
         artist_data = [artist_id, artist_name, location, lat, long]
         cur.execute(artist_table_insert, artist_data)
 
+
 def process_log_file(cur, filepath):
     # open log file
     df = pd.read_json(filepath, lines=True)
@@ -77,20 +78,24 @@ def process_log_file(cur, filepath):
 
     # insert songplay records
     for index, row in df.iterrows():
-        
+
         # get songid and artistid from song and artist tables
         results = cur.execute(song_select, (row.song, row.artist, row.length))
         songid, artistid = results if results else None, None
 
+        if songid is None or artistid is None:
+            # Skip null values for song_id and artist_id
+            # https://knowledge.udacity.com/questions/106761
+            continue
         # insert songplay record
         songplay_data = (
-        row.ts,
-        row.userId,
-        row.level, songid,
-        artistid,
-        row.sessionId,
-        row.location,
-        row.userAgent)
+            row.ts,
+            row.userId,
+            row.level, songid,
+            artistid,
+            row.sessionId,
+            row.location,
+            row.userAgent)
         cur.execute(songplay_table_insert, songplay_data)
 
 
@@ -98,8 +103,8 @@ def process_data(cur, conn, filepath, func):
     # get all files matching extension from directory
     all_files = []
     for root, dirs, files in os.walk(filepath):
-        files = glob.glob(os.path.join(root,'*.json'))
-        for f in files :
+        files = glob.glob(os.path.join(root, '*.json'))
+        for f in files:
             all_files.append(os.path.abspath(f))
 
     # get total number of files found
@@ -126,4 +131,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

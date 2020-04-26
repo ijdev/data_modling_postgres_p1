@@ -3,6 +3,15 @@ from sql_queries import create_table_queries, drop_table_queries
 
 
 def create_database():
+    """
+    connect to a default database and set auto-commit to true
+    then drop sparkifydb db if exists otherwise it get created
+    finally connect to sparkifydb and returns db connection and cursor.
+
+    :return:
+        conn: connection to the database
+        cur: the cursor of the database
+    """
     # connect to default database
     try:
         conn = psycopg2.connect("host=127.0.0.1 dbname=studentdb user=student password=student")
@@ -11,14 +20,6 @@ def create_database():
         cur = conn.cursor()
 
         # create sparkify database with UTF8 encoding
-
-        ### To close connection if another session is connected
-        # cur.execute("""
-        #     SELECT pg_terminate_backend(pg_stat_activity.pid)
-        #     FROM pg_stat_activity
-        #     WHERE pg_stat_activity.datname = 'sparkifydb'
-        #     AND pid <> pg_backend_pid();
-        # """)
         cur.execute("DROP DATABASE IF EXISTS sparkifydb")
         cur.execute("CREATE DATABASE sparkifydb WITH ENCODING 'utf8' TEMPLATE template0")
 
@@ -27,6 +28,7 @@ def create_database():
 
         # connect to sparkify database
         conn = psycopg2.connect("host=127.0.0.1 dbname=sparkifydb user=student password=student")
+
 
         cur = conn.cursor()
 
@@ -39,6 +41,12 @@ def create_database():
 
 
 def drop_tables(cur, conn):
+    """
+    loop and execute each query in drop_table_queries defined in sql_quires
+
+    :param cur: curser of the database
+    :param conn: the connection to the database
+    """
     try:
         for query in drop_table_queries:
             cur.execute(query)
@@ -50,6 +58,12 @@ def drop_tables(cur, conn):
 
 
 def create_tables(cur, conn):
+    """
+    loop and execute each query in drop_table_queries defined in sql_quires
+
+    :param cur: curser of the database
+    :param conn: the connection to the database
+    """
     try:
         for query in create_table_queries:
             cur.execute(query)
